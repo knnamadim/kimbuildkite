@@ -1,0 +1,8 @@
+version: '3.9'
+services:
+  golang_build:
+    image: golang:1.18.0 
+    working_dir: /go-app 
+    volumes:
+      - "./go-app:/go-app" 
+    command: go build -o kim-artifacts example/hello.go
