@@ -1,0 +1,36 @@
+env:
+#  IMAGE_REPO: "localhost:5005/docker-compose-test"  
+  GO_VERSION: "1.18.0"                                
+
+steps:
+  - label: ":docker: Build with Golang 1.18.0"
+    plugins:
+      docker-compose#v3.0.0:                             
+        build: true                                      
+        push: false                                      
+        config: example/goproj/docker-compose.yml         
+        services:
+          - golang_build                                 
+    command: |
+      go build -o output_binary example/hello.go        
+      buildkite-agent artifact upload "output_binary"   
+
+  - block: "User Name Please"
+    prompt: "User name / approval keep needed"           
+    fields:
+      - text: "User Name"                               
+        key: "release-name"                              
+        hint: "Please enter user name"                   
+      - select: "Go Ahead?"                              
+        key: "release-type"                              
+        default: "beta"                                  
+        options:                                          
+          - label: "Okay"
+            value: "okay"
+  
+
+  - label: ":rocket: Deploy"
+    command: |
+      buildkite-agent artifact download "output_binary" .   
+      ./output_binary                                       
+
