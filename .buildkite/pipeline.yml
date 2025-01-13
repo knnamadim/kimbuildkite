@@ -1,20 +1,12 @@
 env:
-#  IMAGE_REPO: "localhost:5005/docker-compose-test"  
   GO_VERSION: "1.18.0"                                
 
 steps:
   - label: ":docker: Build with Golang 1.18.0"
-    plugins:
-      docker-compose#v3.0.0:                             
-        build: true                                      
-        push: false                                      
-        config: example/goproj/docker-compose.yml         
-        services:
-          - golang_build                                 
     command: |
-      go build -o output_binary example/hello.go        
-      buildkite-agent artifact upload "output_binary"   
-
+      go build -o output_binary goproj/hello.go
+      buildkite-agent artifact upload "output_binary"                                 
+      
   - block: "User Name Please"
     prompt: "User name / approval keep needed"           
     fields:
@@ -28,9 +20,9 @@ steps:
           - label: "Okay"
             value: "okay"
   
-
   - label: ":rocket: Deploy"
     command: |
       buildkite-agent artifact download "output_binary" .   
       ./output_binary                                       
 
+# rigger build and wait for name entry 

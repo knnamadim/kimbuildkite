@@ -25,6 +25,6 @@ import (
 func main() {
 	
 	name := strings.Join(os.Args[1:]," ")
-	response := "Hello, " + Kimberly N + "!"
+	response := "Hello, " + name + "!"
 	fmt.Println(response)
 }
