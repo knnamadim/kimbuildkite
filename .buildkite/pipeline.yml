@@ -4,9 +4,12 @@ env:
 steps:
   - label: ":docker: Build with Golang 1.18.0"
     command: |
-      go build -o output_binary goproj/hello.go
-      buildkite-agent artifact upload "output_binary"                                 
-      
+      go build -o output_binary groproj/hello/hello.go
+      buildkite-agent artifact upload "output_binary"
+    plugins:
+      - docker#v3.8.0:
+          image: golang:1.18.0
+                                       
   - block: "User Name Please"
     prompt: "User name / approval keep needed"           
     fields:
@@ -24,5 +27,3 @@ steps:
     command: |
       buildkite-agent artifact download "output_binary" .   
       ./output_binary                                       
-
-# rigger build and wait for name entry 
