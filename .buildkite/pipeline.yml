@@ -32,3 +32,5 @@ steps:
     plugins:
       - docker#v3.9.0:
           image: golang:1.18.0
+
+# push 
