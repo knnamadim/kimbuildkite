@@ -29,11 +29,10 @@ steps:
 
   - label: ":rocket: Deploy"
     command: |
-      buildkite-agent artifact download "output_binary" .
+      export USER_NAME=$(buildkite-agent meta-data get release-name)
+      buildkite-agent meta-data set release-name "$USER_NAME"
       buildkite-agent artifact download "output_binary" .      
       chmod +x output_binary
-      export USER_NAME=$(buildkite-agent meta-data get release-name)
-      echo "User Name: $USER_NAME" 
       ./output_binary "$USER_NAME"
     plugins:
       - docker#v3.9.0:
