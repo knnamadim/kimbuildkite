@@ -29,6 +29,7 @@ steps:
   - label: ":rocket: Deploy"
     command: |
       export USER_NAME=$(buildkite-agent meta-data get release-name)
+      echo "Deploying for user: $USER_NAME"
       buildkite-agent meta-data set release-name "$USER_NAME"
       buildkite-agent artifact download "output_binary" .
       chmod +x output_binary
