@@ -4,12 +4,13 @@ env:
 steps:
   - label: ":docker: Build with Golang 1.18.0"
     command: |
+      go version
       go build -o output_binary /workdir/hello/hello.go
       chmod +x output_binary
       buildkite-agent artifact upload "output_binary"
     plugins:
       - docker#v3.9.0:
-          image: golang:1.18.0
+          image: golang:${GO_VERSION}
 
   - label: ":stop: please enter user name"
     type: block
@@ -24,18 +25,16 @@ steps:
         options:
           - label: "Okay"
             value: "okay"
-    command: |
-      buildkite-agent meta-data set release-name "${BUILDKITE_BUILD_META_RELEASE_NAME}"
 
   - label: ":rocket: Deploy"
     command: |
       export USER_NAME=$(buildkite-agent meta-data get release-name)
       buildkite-agent meta-data set release-name "$USER_NAME"
-      buildkite-agent artifact download "output_binary" .      
+      buildkite-agent artifact download "output_binary" .
       chmod +x output_binary
       ./output_binary "$USER_NAME"
     plugins:
       - docker#v3.9.0:
-          image: golang:1.18.0
+          image: golang:${GO_VERSION}
 
 
