@@ -9,7 +9,8 @@ steps:
     plugins:
       - docker#v3.9.0:
           image: golang:1.18.0
-                                       
+
+  - label: ":stop: please enter user name"                                  
   - block: "User Name Please"
     prompt: "User name / approval needed"           
     fields:
@@ -26,7 +27,8 @@ steps:
   - label: ":rocket: Deploy"
     command: |
       buildkite-agent artifact download "output_binary" .
-      ./output_binary "$(buildkite-agent meta-data get release-name)"
+      export USER_NAME=$(buildkite-agent meta-data get release-name)
+      ./output_binary "$USER_NAME"
     plugins:
       - docker#v3.9.0:
           image: golang:1.18.0
