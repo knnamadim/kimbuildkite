@@ -32,3 +32,6 @@ steps:
     plugins:
       - docker#v3.9.0:
           image: golang:1.18.0
+          volumes:
+            - "/var/lib/buildkite-agent/builds/ip-172-31-22-70-ec2-internal-1/kimtest/kim-go-pipeline:/workdir"
+          working_directory: "/workdir"
