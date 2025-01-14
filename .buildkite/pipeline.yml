@@ -4,7 +4,7 @@ env:
 steps:
   - label: ":docker: Build with Golang 1.18.0"
     command: |
-      go build -o output_binary goproj/hello/hello.go
+      go build -o output_binary kimbuildkite/hello/hello.go
       buildkite-agent artifact upload "output_binary"
     plugins:
       - docker#v3.9.0:
