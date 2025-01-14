@@ -5,6 +5,7 @@ steps:
   - label: ":docker: Build with Golang 1.18.0"
     command: |
       go build -o output_binary /workdir/hello/hello.go
+      chmod +x output_binary
       buildkite-agent artifact upload "output_binary"
     plugins:
       - docker#v3.9.0:
@@ -27,6 +28,7 @@ steps:
   - label: ":rocket: Deploy"
     command: |
       buildkite-agent artifact download "output_binary" .
+      chmod +x output_binary
       export USER_NAME=$(buildkite-agent meta-data get release-name)
       ./output_binary "$USER_NAME"
     plugins:
