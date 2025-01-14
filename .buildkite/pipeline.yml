@@ -1,29 +1,32 @@
 env:
-  GO_VERSION: "1.18.0"                                
+  GO_VERSION: "1.18.0"
 
 steps:
   - label: ":docker: Build with Golang 1.18.0"
     command: |
-      go build -o output_binary groproj/hello/hello.go
+      go build -o output_binary goproj/hello/hello.go
       buildkite-agent artifact upload "output_binary"
     plugins:
-      - docker#v3.8.0:
+      - docker#v3.9.0:
           image: golang:1.18.0
                                        
   - block: "User Name Please"
-    prompt: "User name / approval keep needed"           
+    prompt: "User name / approval needed"           
     fields:
       - text: "User Name"                               
         key: "release-name"                              
-        hint: "Please enter user name"                   
+        hint: "Please enter your name"                   
       - select: "Go Ahead?"                              
         key: "release-type"                              
         default: "beta"                                  
         options:                                          
           - label: "Okay"
             value: "okay"
-  
+
   - label: ":rocket: Deploy"
     command: |
-      buildkite-agent artifact download "output_binary" .   
-      ./output_binary                                       
+      buildkite-agent artifact download "output_binary" .
+      ./output_binary "$(buildkite-agent meta-data get release-name)"
+    plugins:
+      - docker#v3.9.0:
+          image: golang:1.18.0
