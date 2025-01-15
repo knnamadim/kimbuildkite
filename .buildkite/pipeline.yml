@@ -25,25 +25,12 @@ steps:
           - label: "Okay"
             value: "okay"
     command: |
-      if [ -z "$BUILDKITE_RELEASE_NAME" ]; then
-        echo "Error: No release-name provided."
-        exit 1
-      fi
-      # Save the input metadata for use in later steps
       buildkite-agent meta-data set release-name "$BUILDKITE_RELEASE_NAME"
 
   - label: ":rocket: Deploy"
     command: |
       export USER_NAME=$(buildkite-agent meta-data get release-name)
-
-      if [ -z "$USER_NAME" ]; then
-        echo "Error: release-name metadata is empty!"
-        exit 1
-      fi
-
       echo "Deploying for user: $USER_NAME"
-      
-      # Download and deploy the binary
       buildkite-agent artifact download "output_binary" .
       chmod +x output_binary
       ./output_binary "$USER_NAME"
