@@ -9,7 +9,7 @@ steps:
       buildkite-agent artifact upload "output_binary"
     plugins:
       - docker#v3.9.0:
-          image: golang:${GO_VERSION}
+          image: golang:1.18.0
 
   - label: ":stop: Please enter user name"
     type: block
@@ -24,14 +24,13 @@ steps:
         options:
           - label: "Okay"
             value: "okay"
-
     command: |
-      if [ -n "$BUILDKITE_META_RELEASE_NAME" ]; then
-        buildkite-agent meta-data set release-name "$BUILDKITE_META_RELEASE_NAME"
-      else
+      if [ -z "$BUILDKITE_RELEASE_NAME" ]; then
         echo "Error: No release-name provided."
         exit 1
       fi
+      # Save the input metadata for use in later steps
+      buildkite-agent meta-data set release-name "$BUILDKITE_RELEASE_NAME"
 
   - label: ":rocket: Deploy"
     command: |
@@ -44,6 +43,7 @@ steps:
 
       echo "Deploying for user: $USER_NAME"
       
+      # Download and deploy the binary
       buildkite-agent artifact download "output_binary" .
       chmod +x output_binary
       ./output_binary "$USER_NAME"
