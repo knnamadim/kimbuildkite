@@ -24,8 +24,6 @@ steps:
         options:
           - label: "Okay"
             value: "okay"
-    command: |
-      buildkite-agent meta-data set release-name "${release-name}"
 
   - label: ":rocket: Deploy"
     command: |
