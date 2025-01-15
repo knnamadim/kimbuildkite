@@ -2,39 +2,31 @@ env:
   GO_VERSION: "1.18.0"
 
 steps:
+  # Step 1: Build and upload the Golang project artifact
   - label: ":docker: Build with Golang 1.18.0"
     command: |
-      go build -o output_binary /workdir/hello/hello.go
-      chmod +x output_binary
-      buildkite-agent artifact upload "output_binary"
+      go build -o hello/hello /workdir/hello/hello.go
+      chmod +x hello/hello
+      buildkite-agent artifact upload "hello/hello"
     plugins:
       - docker#v3.9.0:
           image: golang:1.18.0
 
+  # Step 2: Block step for user input (enter username)
   - label: ":stop: Please enter user name"
     type: block
     prompt: "User name / approval needed"
     fields:
       - text: "User Name"
-        key: "release-name"
+        key: "username"
         hint: "Please enter your name"
-      - select: "Go Ahead?"
-        key: "release-type"
-        default: "beta"
-        options:
-          - label: "Okay"
-            value: "okay"
 
+  # Step 3: Download the artifact and run the compiled program
   - label: ":rocket: Deploy"
     command: |
-      echo "Retrieving metadata..."
-      USER_NAME=$(buildkite-agent meta-data get release-name)
-      
-      echo "Deploying for user: $USER_NAME"
-      
-      buildkite-agent artifact download "output_binary" .
-      chmod +x output_binary
-      ./output_binary "$USER_NAME"  # Pass the user name as an argument to the program
+      buildkite-agent artifact download "hello/hello" .
+      chmod +x hello/hello
+      ./hello/hello "$(buildkite-agent meta-data get username)"
     plugins:
       - docker#v3.9.0:
           image: golang:1.18.0
