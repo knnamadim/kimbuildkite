@@ -11,7 +11,7 @@ steps:
       - docker#v3.9.0:
           image: golang:${GO_VERSION}
 
-  - label: ":stop: please enter user name"
+  - label: ":stop: Please enter user name"
     type: block
     prompt: "User name / approval needed"
     fields:
@@ -24,8 +24,14 @@ steps:
         options:
           - label: "Okay"
             value: "okay"
-    command: |       
-      buildkite-agent meta-data set release-name "${BUILDKITE_BUILD_META_RELEASE_NAME}"
+
+    command: |
+      if [ -n "$BUILDKITE_META_RELEASE_NAME" ]; then
+        buildkite-agent meta-data set release-name "$BUILDKITE_META_RELEASE_NAME"
+      else
+        echo "Error: No release-name provided."
+        exit 1
+      fi
 
   - label: ":rocket: Deploy"
     command: |
@@ -35,12 +41,14 @@ steps:
         echo "Error: release-name metadata is empty!"
         exit 1
       fi
-     
+
       echo "Deploying for user: $USER_NAME"
+      
       buildkite-agent artifact download "output_binary" .
       chmod +x output_binary
       ./output_binary "$USER_NAME"
     plugins:
       - docker#v3.9.0:
-          image: golang:${GO_VERSION}
+          image: golang:1.18.0
+
 
